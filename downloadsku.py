@@ -66,9 +66,10 @@ def main(argv):
                     name, ext = os.path.splitext(basename)
                     newfullpath = os.path.join(dirname, sku+ext)
                     if os.path.isfile(newfullpath):
-                        os.rename(fullpath, os.path.join(dirname, sku+ext))
-                    # else:
                         # os.remove(fullpath)
+                        print("File exists, skipping rename")
+                    else:
+                        os.rename(fullpath, os.path.join(dirname, sku+ext))
                 except:
                     err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
                     log_error(err_msg)
