@@ -3,6 +3,7 @@ import sys
 import getopt
 
 from google_images_download import google_images_download
+from datetime import date
 
 def printhelp():
     print("downloadsku.py -f <skufile> -s <size> -t <format>")
@@ -10,6 +11,18 @@ def printhelp():
     print("    default: >1024*768")
     print("  and <format> is one of jpg, gif, png, bmp, svg, webp, ico, raw")
     print("    default: jpg")
+
+def log_error(msg):
+    today = date.today()
+    logfilename = "download_sku_error_" + today.isoformat() + ".log"
+    with open(logfilename, "a+") as f:
+        f.write(msg + os.linesep)
+
+def log(msg):
+    today = date.today()
+    logfilename = "download_sku_log_" + today.isoformat() + ".log"
+    with open(logfilename, "a+") as f:
+        f.write(msg + os.linesep)
 
 def main(argv):
     skufile = "sku.txt"
@@ -40,16 +53,32 @@ def main(argv):
                 "limit": 1,
                 "print_urls": False,
                 "no_directory": True,
-                "prefix": sku,
+                "prefix": "temp",
                 "format": fmt,
                 "size": size
             }
             paths, err = response.download(args)
-            fullpath = paths["\""+sku+"\""][0]
-            dirname  = os.path.dirname(fullpath)
-            basename = os.path.basename(fullpath)
-            name, ext = os.path.splitext(basename)
-            os.rename(fullpath, os.path.join(dirname, sku+ext))
+            if err == 0:
+                try:
+                    fullpath = paths["\""+sku+"\""][0]
+                    dirname  = os.path.dirname(fullpath)
+                    basename = os.path.basename(fullpath)
+                    name, ext = os.path.splitext(basename)
+                    newfullpath = os.path.join(dirname, sku+ext)
+                    if os.path.isfile(newfullpath):
+                        os.rename(fullpath, os.path.join(dirname, sku+ext))
+                    # else:
+                        # os.remove(fullpath)
+                except:
+                    err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
+                    log_error(err_msg)
+                    print(err_msg)
+                    print("continue...")
+            else:
+                err_msg = "Error in 'googleimagesdownload' with args: '" + str(args) + "'"
+                log_error(err_msg)
+                print(err_msg)
+                print("continue...")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
