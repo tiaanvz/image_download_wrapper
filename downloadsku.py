@@ -58,28 +58,28 @@ def main(argv):
                 "size": size
             }
             paths, err = response.download(args)
-            if err == 0:
-                try:
-                    fullpath = paths["\""+sku+"\""][0]
-                    dirname  = os.path.dirname(fullpath)
-                    basename = os.path.basename(fullpath)
-                    name, ext = os.path.splitext(basename)
-                    newfullpath = os.path.join(dirname, sku+ext)
-                    if os.path.isfile(newfullpath):
-                        # os.remove(fullpath)
-                        print("File exists, skipping rename")
-                    else:
-                        os.rename(fullpath, os.path.join(dirname, sku+ext))
-                except:
-                    err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
-                    log_error(err_msg)
-                    print(err_msg)
-                    print("continue...")
-            else:
-                err_msg = "Error in 'googleimagesdownload' with args: '" + str(args) + "'"
+            # if err == 0:
+            try:
+                fullpath = paths["\""+sku+"\""][0]
+                dirname  = os.path.dirname(fullpath)
+                basename = os.path.basename(fullpath)
+                name, ext = os.path.splitext(basename)
+                newfullpath = os.path.join(dirname, sku+ext)
+                if os.path.isfile(newfullpath):
+                    # os.remove(fullpath)
+                    print("File exists, skipping rename")
+                else:
+                    os.rename(fullpath, os.path.join(dirname, sku+ext))
+            except:
+                err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
                 log_error(err_msg)
                 print(err_msg)
                 print("continue...")
+            # else:
+            #     err_msg = "Error in 'googleimagesdownload' with args: '" + str(args) + "' and paths: '" + str(paths) + "'"
+            #     log_error(err_msg)
+            #     print(err_msg)
+            #     print("continue...")
 
 if __name__ == "__main__":
    main(sys.argv[1:])
