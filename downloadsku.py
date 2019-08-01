@@ -53,21 +53,27 @@ def enquote(val):
     return "\"" + val + "\""
 
 def do_file_operations(paths, sku, args):
-    try:
-        fullpath    = paths[enquote(sku)][0]
-        dirname     = os.path.dirname(fullpath)
-        basename    = os.path.basename(fullpath)
-        name, ext   = os.path.splitext(basename)
-        newfullpath = os.path.join(dirname, sku+ext)
-        if os.path.isfile(newfullpath):
-            print("File exists, skipping rename")
-        else:
-            os.rename(fullpath, os.path.join(dirname, sku+ext))
-    except:
-        err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
+    k1 = list(paths)[0]
+    if len(paths[k1]) > 0:
+        try:
+            fullpath    = paths[k1][0]
+            dirname     = os.path.dirname(fullpath)
+            basename    = os.path.basename(fullpath)
+            name, ext   = os.path.splitext(basename)
+            newfullpath = os.path.join(dirname, sku+ext)
+            if os.path.isfile(newfullpath):
+                print("File exists, skipping rename")
+            else:
+                os.rename(fullpath, os.path.join(dirname, sku+ext))
+        except:
+            err_msg = "Exception with file operations: '" + str(paths) + "' with args  '" + str(args) + "'"
+            log_error(err_msg)
+            print(err_msg)
+            print("continue...")
+    else:
+        err_msg = "*** image not found for '" + sku + "' ***"
         log_error(err_msg)
         print(err_msg)
-        print("continue...")
 
 def main(argv):
     opts = get_options(argv)
@@ -75,18 +81,19 @@ def main(argv):
     print(opts)
     with open(opts['skufile'], "r") as f:
         for line in f:
-            sku = line.strip()
+            terms = line.strip().split(',')
             args = {
-                'keywords'    : enquote(sku),
-                'limit'       : 1,
-                'print_urls'  : False,
-                'no_directory': True,
-                'prefix'      : "temp",
-                'format'      : opts['fmt'],
-                'size'        : opts['size']
+                'keywords'        : enquote(terms[0]),
+                'suffix_keywords' : terms[1] if len(terms) > 1 else "",
+                'limit'           : 1,
+                'print_urls'      : False,
+                'no_directory'    : True,
+                'prefix'          : "temp",
+                'format'          : opts['fmt'],
+                'size'            : opts['size']
             }
             paths, err = response.download(args)
-            do_file_operations(paths, sku, args)
+            do_file_operations(paths, terms[0], args)
 
 if __name__ == "__main__":
    main(sys.argv[1:])
