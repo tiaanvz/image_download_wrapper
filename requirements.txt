@@ -1,0 +1,1 @@
+-e git+git://github.com/tiaanvz/google-images-download.git#egg=google_images_download
