@@ -16,4 +16,6 @@ python ./downloadsku.py -f "sku.txt" -s ">1024*768" -t "jpg"
 
 ```powershell
 pip uninstall google_images_download
+(or)
+py -m pip uninstall google_images_download
 ```
