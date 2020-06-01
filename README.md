@@ -4,6 +4,8 @@ Wrapper for google_images_download
 
 ## Usage
 
+(requirment: git)
+
 ```powershell
 pip install -r requirements.txt
 (or)
